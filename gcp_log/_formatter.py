@@ -45,12 +45,12 @@ RESERVED_ATTRS: tuple[str, ...] = (
 def ensure_imported(target: T | str) -> T:
     if not isinstance(target, str):
         return target
-    path, _, function = target.rsplit('.', maxsplit=1)
+    path, function = target.rsplit('.', maxsplit=1)
     module = import_module(path)
     return getattr(module, function)
 
 
-class GCPFormatter(logging.Formatter):
+class Formatter(logging.Formatter):
     """Format logs as GCP-compatible JSON.
 
     https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
@@ -59,7 +59,7 @@ class GCPFormatter(logging.Formatter):
 
     def __init__(
         self,
-        default: Callable[[object], object] | str,
+        default: Callable[[object], object] | str = str,
     ) -> None:
         self.default = ensure_imported(default)
 
