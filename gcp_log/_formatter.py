@@ -1,9 +1,9 @@
 from __future__ import annotations
-from importlib import import_module
 
 import json
 import logging
 from datetime import datetime, timezone
+from importlib import import_module
 from typing import Callable, TypeVar
 
 try:
@@ -15,7 +15,7 @@ except ImportError:
 T = TypeVar('T')
 
 # https://docs.python.org/3/library/logging.html#logrecord-attributes
-RESERVED_ATTRS: tuple[str, ...] = (
+RESERVED_ATTRS = frozenset({
     'args',
     'asctime',
     'color_message',
@@ -39,7 +39,7 @@ RESERVED_ATTRS: tuple[str, ...] = (
     'stack_info',
     'thread',
     'threadName',
-)
+})
 
 
 def ensure_imported(target: T | str) -> T:
