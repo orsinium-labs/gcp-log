@@ -95,4 +95,9 @@ class Formatter(logging.Formatter):
 
         if orjson is not None:
             return orjson.dumps(result, default=self.default).decode()
-        return json.dumps(result, default=self.default, allow_nan=False)
+        return json.dumps(
+            result,
+            default=self.default,
+            allow_nan=False,
+            separators=(',', ':'),
+        )
