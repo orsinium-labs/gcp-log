@@ -9,19 +9,20 @@ from unittest.mock import ANY
 from gcp_log import Formatter
 
 
-def test_gcp_formatter():
-    stream = StringIO()
+def make_logger(stream: StringIO) -> logging.Logger:
     logger = logging.getLogger('arnor')
     handler = logging.StreamHandler(stream)
     handler.formatter = Formatter()
     logger.setLevel(logging.DEBUG)
     logger.addHandler(handler)
+    return logger
 
+
+def test_gcp_formatter() -> None:
+    stream = StringIO()
+    logger = make_logger(stream)
     logger.info('aragorn', extra=dict(father='arathorn'))
-    stream.seek(0)
-    stdout = stream.read()
-    assert stdout
-    record = json.loads(stdout)
+    record = json.loads(stream.getvalue())
     assert record == {
         'message': 'aragorn',
         'severity': 'INFO',
