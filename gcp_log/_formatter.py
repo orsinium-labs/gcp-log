@@ -6,10 +6,11 @@ from datetime import datetime, timezone
 from importlib import import_module
 from typing import Callable, TypeVar
 
+
 try:
     import orjson
 except ImportError:
-    orjson = None  # type: ignore
+    orjson = None
 
 
 T = TypeVar('T')
