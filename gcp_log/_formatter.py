@@ -60,8 +60,12 @@ class Formatter(logging.Formatter):
 
     def __init__(
         self,
+        fmt: str = None,
+        datefmt: str = None,
+        style: str = '%',
         default: Callable[[object], object] | str = str,
     ) -> None:
+        super().__init__(fmt, datefmt, style)
         self.default = ensure_imported(default)
 
     def format(self, record: logging.LogRecord) -> str:
