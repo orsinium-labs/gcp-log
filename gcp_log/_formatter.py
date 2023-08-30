@@ -13,40 +13,42 @@ except ImportError:
     orjson = None
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 # https://docs.python.org/3/library/logging.html#logrecord-attributes
-RESERVED_ATTRS = frozenset({
-    'args',
-    'asctime',
-    'color_message',
-    'created',
-    'exc_info',
-    'exc_text',
-    'filename',
-    'funcName',
-    'levelname',
-    'levelno',
-    'lineno',
-    'message',
-    'module',
-    'msecs',
-    'msg',
-    'name',
-    'pathname',
-    'process',
-    'processName',
-    'relativeCreated',
-    'stack_info',
-    'thread',
-    'threadName',
-})
+RESERVED_ATTRS = frozenset(
+    {
+        "args",
+        "asctime",
+        "color_message",
+        "created",
+        "exc_info",
+        "exc_text",
+        "filename",
+        "funcName",
+        "levelname",
+        "levelno",
+        "lineno",
+        "message",
+        "module",
+        "msecs",
+        "msg",
+        "name",
+        "pathname",
+        "process",
+        "processName",
+        "relativeCreated",
+        "stack_info",
+        "thread",
+        "threadName",
+    }
+)
 
 
 def ensure_imported(target: T | str) -> T:
     if not isinstance(target, str):
         return target
-    path, function = target.rsplit('.', maxsplit=1)
+    path, function = target.rsplit(".", maxsplit=1)
     module = import_module(path)
     return getattr(module, function)
 
@@ -56,16 +58,18 @@ class Formatter(logging.Formatter):
 
     https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
     """
+
     default: Callable[[object], object]
 
     def __init__(
         self,
         fmt: str = None,
         datefmt: str = None,
-        style: str = '%',
+        style: str = "%",
+        validate: bool = True,
         default: Callable[[object], object] | str = str,
     ) -> None:
-        super().__init__(fmt, datefmt, style)
+        super().__init__(fmt, datefmt, style, validate)
         self.default = ensure_imported(default)
 
     def format(self, record: logging.LogRecord) -> str:
@@ -73,25 +77,25 @@ class Formatter(logging.Formatter):
         created_at = datetime.fromtimestamp(record.created).astimezone(timezone.utc)
 
         result: dict[str, object] = {
-            'message': record.message,
-            'severity': record.levelname.upper(),
-            'timestamp': f'{created_at.isoformat()}Z',
-            'logging.googleapis.com/sourceLocation': {
-                'file': record.pathname,
-                'line': record.lineno,
-                'function': record.funcName,
-            }
+            "message": record.message,
+            "severity": record.levelname.upper(),
+            "timestamp": f"{created_at.isoformat()}Z",
+            "logging.googleapis.com/sourceLocation": {
+                "file": record.pathname,
+                "line": record.lineno,
+                "function": record.funcName,
+            },
         }
 
         if record.exc_info:
-            result['exc_info'] = self.formatException(record.exc_info)
+            result["exc_info"] = self.formatException(record.exc_info)
         elif record.exc_text:
-            result['exc_info'] = record.exc_text
+            result["exc_info"] = record.exc_text
         if record.stack_info:
-            result['stack_info'] = record.stack_info
+            result["stack_info"] = record.stack_info
 
         for key, value in record.__dict__.items():
-            if key.startswith('_'):
+            if key.startswith("_"):
                 continue
             if key in RESERVED_ATTRS:
                 continue
@@ -103,5 +107,5 @@ class Formatter(logging.Formatter):
             result,
             default=self.default,
             allow_nan=False,
-            separators=(',', ':'),
+            separators=(",", ":"),
         )
