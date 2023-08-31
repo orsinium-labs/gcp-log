@@ -4,7 +4,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from importlib import import_module
-from typing import Callable, TypeVar
+from typing import TYPE_CHECKING, Callable, TypeVar
 
 
 try:
@@ -12,6 +12,9 @@ try:
 except ImportError:
     orjson = None
 
+
+if TYPE_CHECKING:
+    from typing import Literal
 
 T = TypeVar('T')
 
@@ -42,6 +45,7 @@ RESERVED_ATTRS = frozenset({
     'threadName',
 })
 
+
 def ensure_imported(target: T | str) -> T:
     if not isinstance(target, str):
         return target
@@ -60,10 +64,11 @@ class Formatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: str = None,
-        datefmt: str = None,
-        style: str = '%',
+        fmt: str | None = None,
+        datefmt: str | None = None,
+        style: Literal['%', '{', '$'] = '%',
         validate: bool = True,
+        *,
         default: Callable[[object], object] | str = str,
     ) -> None:
         super().__init__(fmt, datefmt, style, validate)
