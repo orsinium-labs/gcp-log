@@ -16,34 +16,31 @@ except ImportError:
 T = TypeVar('T')
 
 # https://docs.python.org/3/library/logging.html#logrecord-attributes
-RESERVED_ATTRS = frozenset(
-    {
-        'args',
-        'asctime',
-        'color_message',
-        'created',
-        'exc_info',
-        'exc_text',
-        'filename',
-        'funcName',
-        'levelname',
-        'levelno',
-        'lineno',
-        'message',
-        'module',
-        'msecs',
-        'msg',
-        'name',
-        'pathname',
-        'process',
-        'processName',
-        'relativeCreated',
-        'stack_info',
-        'thread',
-        'threadName',
-    }
-)
-
+RESERVED_ATTRS = frozenset({
+    'args',
+    'asctime',
+    'color_message',
+    'created',
+    'exc_info',
+    'exc_text',
+    'filename',
+    'funcName',
+    'levelname',
+    'levelno',
+    'lineno',
+    'message',
+    'module',
+    'msecs',
+    'msg',
+    'name',
+    'pathname',
+    'process',
+    'processName',
+    'relativeCreated',
+    'stack_info',
+    'thread',
+    'threadName',
+})
 
 def ensure_imported(target: T | str) -> T:
     if not isinstance(target, str):
@@ -84,7 +81,7 @@ class Formatter(logging.Formatter):
                 'file': record.pathname,
                 'line': record.lineno,
                 'function': record.funcName,
-            },
+            }
         }
 
         if record.exc_info:
