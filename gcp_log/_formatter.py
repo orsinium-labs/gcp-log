@@ -42,7 +42,6 @@ RESERVED_ATTRS = frozenset({
     'threadName',
 })
 
-
 def ensure_imported(target: T | str) -> T:
     if not isinstance(target, str):
         return target
@@ -56,12 +55,18 @@ class Formatter(logging.Formatter):
 
     https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
     """
+
     default: Callable[[object], object]
 
     def __init__(
         self,
+        fmt: str = None,
+        datefmt: str = None,
+        style: str = '%',
+        validate: bool = True,
         default: Callable[[object], object] | str = str,
     ) -> None:
+        super().__init__(fmt, datefmt, style, validate)
         self.default = ensure_imported(default)
 
     def format(self, record: logging.LogRecord) -> str:
